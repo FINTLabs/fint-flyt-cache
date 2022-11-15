@@ -37,6 +37,9 @@ dependencies {
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
     annotationProcessor 'org.projectlombok:lombok'
 
+    implementation 'org.ehcache:ehcache:3.1.0'
+    implementation 'net.sf.ehcache:ehcache:2.10.9.2'
+
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'cglib:cglib-nodep:3.3.0'
     testImplementation 'org.spockframework:spock-spring:2.3-groovy-3.0'
