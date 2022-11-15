@@ -9,11 +9,11 @@ import org.ehcache.event.EventType;
 public abstract class FintEhCacheEventListener<K, V> implements FintCacheEventListener<K, V>, CacheEventListener<K, V> {
 
     @Override
-    public void onEvent(CacheEvent<K, V> event) {
+    public void onEvent(CacheEvent<? extends K, ? extends V> event) {
         this.onEvent(this.map(event));
     }
 
-    private FintCacheEvent<K, V> map(CacheEvent<K, V> event) {
+    private FintCacheEvent<K, V> map(CacheEvent<? extends K, ? extends V> event) {
         return new FintCacheEvent<>(
                 this.map(event.getType()),
                 event.getKey(),
