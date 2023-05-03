@@ -1,9 +1,10 @@
 package no.fintlabs.cache;
 
-import lombok.Builder;
-import lombok.Data;
+import lombok.*;
+import lombok.extern.jackson.Jacksonized;
 
-@Data
+@Getter
+@EqualsAndHashCode
 @Builder
 public class FintCacheInfo {
     private final String alias;
