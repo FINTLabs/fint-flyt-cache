@@ -24,4 +24,9 @@ public class FintCacheEvent<K, V> {
     @Getter
     private final V newValue;
 
+    @Override
+    public String toString() {
+        return "Sensitive data omitted";
+    }
+
 }
