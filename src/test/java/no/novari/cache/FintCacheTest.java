@@ -1,6 +1,6 @@
-package no.fintlabs.cache;
+package no.novari.cache;
 
-import no.fintlabs.cache.exceptions.NoSuchCacheEntryException;
+import no.novari.cache.exceptions.NoSuchCacheEntryException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -261,7 +261,7 @@ public abstract class FintCacheTest {
         observer.countDownLatch.await();
 
         assertEquals(1, observer.emittedEvents.size());
-        assertEquals(new FintCacheEvent<>(FintCacheEvent.EventType.CREATED, "testKey", null, 1), observer.emittedEvents.get(0));
+        assertEquals(new FintCacheEvent<>(FintCacheEvent.EventType.CREATED, "testKey", null, 1), observer.emittedEvents.getFirst());
     }
 
     @Test
@@ -275,7 +275,7 @@ public abstract class FintCacheTest {
         observer.countDownLatch.await();
 
         assertEquals(1, observer.emittedEvents.size());
-        assertEquals(new FintCacheEvent<>(FintCacheEvent.EventType.UPDATED, "testKey", 1, 2), observer.emittedEvents.get(0));
+        assertEquals(new FintCacheEvent<>(FintCacheEvent.EventType.UPDATED, "testKey", 1, 2), observer.emittedEvents.getFirst());
     }
 
     @Test
@@ -289,7 +289,7 @@ public abstract class FintCacheTest {
         observer.countDownLatch.await();
 
         assertEquals(1, observer.emittedEvents.size());
-        assertEquals(new FintCacheEvent<>(FintCacheEvent.EventType.REMOVED, "testKey", 1, null), observer.emittedEvents.get(0));
+        assertEquals(new FintCacheEvent<>(FintCacheEvent.EventType.REMOVED, "testKey", 1, null), observer.emittedEvents.getFirst());
     }
 
     @Test
@@ -311,7 +311,7 @@ public abstract class FintCacheTest {
         assertTrue(awaitResult);
         assertTrue(getResult.isEmpty());
         assertEquals(1, observer.emittedEvents.size());
-        assertEquals(new FintCacheEvent<>(FintCacheEvent.EventType.EXPIRED, "testKey", 1, null), observer.emittedEvents.get(0));
+        assertEquals(new FintCacheEvent<>(FintCacheEvent.EventType.EXPIRED, "testKey", 1, null), observer.emittedEvents.getFirst());
     }
 
     @Test

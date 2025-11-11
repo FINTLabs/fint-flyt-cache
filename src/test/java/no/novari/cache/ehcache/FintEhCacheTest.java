@@ -1,6 +1,6 @@
-package no.fintlabs.cache.ehcache;
+package no.novari.cache.ehcache;
 
-import no.fintlabs.cache.*;
+import no.novari.cache.*;
 import java.util.function.Consumer;
 
 class FintEhCacheTest extends FintCacheTest {

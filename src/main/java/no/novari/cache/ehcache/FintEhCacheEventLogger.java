@@ -1,7 +1,7 @@
-package no.fintlabs.cache.ehcache;
+package no.novari.cache.ehcache;
 
 import lombok.extern.slf4j.Slf4j;
-import no.fintlabs.cache.FintCacheEvent;
+import no.novari.cache.FintCacheEvent;
 
 @Slf4j
 public class FintEhCacheEventLogger<K, V> extends FintEhCacheEventListener<K, V> {

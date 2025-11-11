@@ -1,4 +1,4 @@
-package no.fintlabs.cache.exceptions;
+package no.novari.cache.exceptions;
 
 public class NoSuchCacheException extends RuntimeException {
 

@@ -1,4 +1,4 @@
-package no.fintlabs.cache;
+package no.novari.cache;
 
 public interface FintCacheManager {
 

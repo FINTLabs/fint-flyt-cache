@@ -1,6 +1,6 @@
-package no.fintlabs.cache;
+package no.novari.cache;
 
-import no.fintlabs.cache.exceptions.NoSuchCacheEntryException;
+import no.novari.cache.exceptions.NoSuchCacheEntryException;
 
 import java.util.*;
 import java.util.stream.Collectors;
