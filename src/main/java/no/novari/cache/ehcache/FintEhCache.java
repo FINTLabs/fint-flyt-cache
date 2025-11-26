@@ -1,8 +1,8 @@
-package no.fintlabs.cache.ehcache;
+package no.novari.cache.ehcache;
 
 import lombok.Getter;
-import no.fintlabs.cache.FintCache;
-import no.fintlabs.cache.FintCacheEventListener;
+import no.novari.cache.FintCache;
+import no.novari.cache.FintCacheEventListener;
 import org.ehcache.Cache;
 import org.ehcache.event.EventFiring;
 import org.ehcache.event.EventOrdering;

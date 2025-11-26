@@ -1,6 +1,6 @@
-package no.fintlabs.cache;
+package no.novari.cache;
 
-import no.fintlabs.cache.exceptions.NoSuchCacheException;
+import no.novari.cache.exceptions.NoSuchCacheException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

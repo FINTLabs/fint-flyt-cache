@@ -1,4 +1,4 @@
-package no.fintlabs.cache;
+package no.novari.cache;
 
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;

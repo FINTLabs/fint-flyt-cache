@@ -1,7 +1,7 @@
-package no.fintlabs.cache.ehcache;
+package no.novari.cache.ehcache;
 
-import no.fintlabs.cache.FintCacheEvent;
-import no.fintlabs.cache.FintCacheEventListener;
+import no.novari.cache.FintCacheEvent;
+import no.novari.cache.FintCacheEventListener;
 import org.ehcache.event.CacheEvent;
 import org.ehcache.event.CacheEventListener;
 import org.ehcache.event.EventType;

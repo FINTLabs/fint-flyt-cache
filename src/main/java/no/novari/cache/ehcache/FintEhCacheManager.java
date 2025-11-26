@@ -1,17 +1,17 @@
-package no.fintlabs.cache.ehcache;
+package no.novari.cache.ehcache;
 
-import no.fintlabs.cache.FintCacheManager;
-import no.fintlabs.cache.FintCacheOptions;
-import no.fintlabs.cache.exceptions.NoSuchCacheException;
+import no.novari.cache.FintCacheManager;
+import no.novari.cache.FintCacheOptions;
+import no.novari.cache.exceptions.NoSuchCacheException;
 import org.ehcache.CacheManager;
 import org.ehcache.config.CacheConfiguration;
 import org.ehcache.config.builders.CacheConfigurationBuilder;
 import org.ehcache.config.builders.CacheManagerBuilder;
+import org.ehcache.config.builders.ExpiryPolicyBuilder;
 import org.ehcache.config.builders.ResourcePoolsBuilder;
-import org.ehcache.expiry.Expirations;
 
+import java.time.Duration;
 import java.util.Optional;
-import java.util.concurrent.TimeUnit;
 
 public class FintEhCacheManager implements FintCacheManager {
 
@@ -29,21 +29,20 @@ public class FintEhCacheManager implements FintCacheManager {
 
     public <K, V> FintEhCache<K, V> createCache(String alias, Class<K> keyClass, Class<V> valueClass, FintCacheOptions cacheOptions) {
         CacheConfiguration<K, V> cacheConfiguration = CacheConfigurationBuilder.newCacheConfigurationBuilder(
-                keyClass,
-                valueClass,
-                ResourcePoolsBuilder.heap(
-                        cacheOptions.heapSize != null
-                                ? cacheOptions.heapSize
-                                : this.defaultCacheOptions.heapSize
-                ).build()
-        ).withExpiry(
-                Expirations.timeToLiveExpiration(org.ehcache.expiry.Duration.of(
-                        cacheOptions.timeToLive != null
-                                ? cacheOptions.timeToLive.toMillis()
-                                : this.defaultCacheOptions.timeToLive.toMillis(),
-                        TimeUnit.MILLISECONDS
-                ))
-        ).build();
+                        keyClass,
+                        valueClass,
+                        ResourcePoolsBuilder.heap(
+                                cacheOptions.heapSize != null
+                                        ? cacheOptions.heapSize
+                                        : this.defaultCacheOptions.heapSize
+                        ).build()
+                )
+                .withExpiry(ExpiryPolicyBuilder.timeToLiveExpiration(Duration.ofMillis(
+                                cacheOptions.timeToLive != null
+                                        ? cacheOptions.timeToLive.toMillis()
+                                        : this.defaultCacheOptions.timeToLive.toMillis()
+                        ))
+                ).build();
 
         FintEhCache<K, V> cache = new FintEhCache<>(
                 alias,

@@ -1,8 +1,8 @@
-package no.fintlabs.cache.ehcache;
+package no.novari.cache.ehcache;
 
-import no.fintlabs.cache.FintCacheManager;
-import no.fintlabs.cache.FintCacheManagerTest;
-import no.fintlabs.cache.FintCacheOptions;
+import no.novari.cache.FintCacheManager;
+import no.novari.cache.FintCacheManagerTest;
+import no.novari.cache.FintCacheOptions;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
