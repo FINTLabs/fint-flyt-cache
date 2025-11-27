@@ -1,6 +1,11 @@
 package no.novari.cache.ehcache;
 
-import no.novari.cache.*;
+import no.novari.cache.FintCacheEvent;
+import no.novari.cache.FintCacheEventListener;
+import no.novari.cache.FintCacheManager;
+import no.novari.cache.FintCacheOptions;
+import no.novari.cache.FintCacheTest;
+
 import java.util.function.Consumer;
 
 class FintEhCacheTest extends FintCacheTest {

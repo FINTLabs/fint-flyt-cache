@@ -2,7 +2,11 @@ package no.novari.cache;
 
 import no.novari.cache.exceptions.NoSuchCacheEntryException;
 
-import java.util.*;
+import java.util.AbstractMap;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public interface FintCache<K, V> {

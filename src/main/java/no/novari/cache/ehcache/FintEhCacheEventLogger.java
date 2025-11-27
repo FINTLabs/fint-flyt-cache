@@ -15,16 +15,13 @@ public class FintEhCacheEventLogger<K, V> extends FintEhCacheEventListener<K, V>
     @Override
     public void onEvent(FintCacheEvent<K, V> event) {
         switch (event.getType()) {
-            case CREATED -> log.info(String.format("Cache entry in '%s' with key='%s' created with value=%s",
-                    this.cacheAlias, event.getKey(), event.getNewValue()));
-            case UPDATED -> log.info(String.format("Cache entry in '%s' with key='%s' updated from %s to %s",
-                    this.cacheAlias, event.getKey(), event.getOldValue(), event.getNewValue()));
-            case REMOVED -> log.info(String.format("Cache entry in '%s' with key='%s' removed",
-                    this.cacheAlias, event.getKey()));
-            case EVICTED -> log.info(String.format("Cache entry in '%s' with key='%s' evicted",
-                    this.cacheAlias, event.getKey()));
-            case EXPIRED -> log.info(String.format("Cache entry in '%s' with key='%s' expired",
-                    this.cacheAlias, event.getKey()));
+            case CREATED -> log.info("Cache entry in '{}' with key='{}' created with value={}",
+                    this.cacheAlias, event.getKey(), event.getNewValue());
+            case UPDATED -> log.info("Cache entry in '{}' with key='{}' updated from {} to {}",
+                    this.cacheAlias, event.getKey(), event.getOldValue(), event.getNewValue());
+            case REMOVED -> log.info("Cache entry in '{}' with key='{}' removed", this.cacheAlias, event.getKey());
+            case EVICTED -> log.info("Cache entry in '{}' with key='{}' evicted", this.cacheAlias, event.getKey());
+            case EXPIRED -> log.info("Cache entry in '{}' with key='{}' expired", this.cacheAlias, event.getKey());
         }
     }
 }
