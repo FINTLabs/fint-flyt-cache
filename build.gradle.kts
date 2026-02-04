@@ -1,7 +1,7 @@
 import org.springframework.boot.gradle.plugin.SpringBootPlugin
 
 plugins {
-    id("org.springframework.boot") version "3.5.7" apply false
+    id("org.springframework.boot") version "3.5.10" apply false
     id("io.spring.dependency-management") version "1.1.7"
     id("java-library")
     id("maven-publish")
@@ -9,6 +9,7 @@ plugins {
 }
 
 group = "no.novari"
+version = "1.0.0-SNAPSHOT"
 
 java {
     toolchain {
