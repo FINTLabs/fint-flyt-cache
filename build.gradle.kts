@@ -11,7 +11,7 @@ plugins {
 }
 
 group = "no.novari"
-version = "1.0.0-SNAPSHOT"
+version = findProperty("version") as String? ?: "1.0-SNAPSHOT"
 
 java {
     toolchain {
