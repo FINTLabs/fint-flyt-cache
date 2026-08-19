@@ -7,7 +7,7 @@ plugins {
     id("io.spring.dependency-management") version "1.1.7"
     id("java-library")
     id("maven-publish")
-    id("com.github.ben-manes.versions") version "0.53.0"
+    id("com.github.ben-manes.versions") version "0.61.0"
 }
 
 group = "no.novari"
