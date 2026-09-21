@@ -22,7 +22,7 @@ plugins {
     id("io.spring.dependency-management") version "1.1.7"
     id("java-library")
     id("maven-publish")
-    id("io.github.ben-manes.versions") version "0.61.0"
+    id("io.github.ben-manes.versions") version "0.64.0"
 }
 
 group = "no.novari"
