@@ -55,7 +55,7 @@ dependencyManagement {
     }
 }
 
-extra["jackson-bom.version"] = "2.21.5"
+extra["jackson-bom.version"] = "2.21.7"
 extra["log4j2.version"] = "2.25.5"
 
 dependencies {
