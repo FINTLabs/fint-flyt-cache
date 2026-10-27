@@ -3,6 +3,7 @@ import org.gradle.kotlin.dsl.named
 import org.springframework.boot.gradle.plugin.SpringBootPlugin
 
 buildscript {
+    configurations.classpath { resolutionStrategy.activateDependencyLocking() }
     repositories {
         gradlePluginPortal()
     }
@@ -57,6 +58,10 @@ dependencyManagement {
 
 extra["jackson-bom.version"] = "2.21.7"
 extra["log4j2.version"] = "2.25.5"
+
+dependencyLocking {
+    lockAllConfigurations()
+}
 
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-actuator")
