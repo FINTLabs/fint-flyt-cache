@@ -1,6 +1,11 @@
+import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
+
 plugins {
     `java-library`
     `maven-publish`
+    alias(libs.plugins.kotlin.jvm)
+    alias(libs.plugins.kotlin.spring)
+    alias(libs.plugins.ktlint)
 }
 
 group = "no.novari"
@@ -16,21 +21,27 @@ java {
     withSourcesJar()
 }
 
+kotlin {
+    compilerOptions {
+        // Spring Boot 4.1 manages Kotlin 2.3, so apps may run with a 2.3 stdlib.
+        apiVersion = KotlinVersion.KOTLIN_2_3
+    }
+}
+
+ktlint {
+    version = libs.versions.ktlint.cli
+}
+
 dependencyLocking {
     lockAllConfigurations()
 }
 
 dependencies {
     implementation(platform(libs.spring.boot.dependencies))
-    compileOnly(platform(libs.spring.boot.dependencies))
-    annotationProcessor(platform(libs.spring.boot.dependencies))
 
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation(libs.ehcache)
     runtimeOnly("io.micrometer:micrometer-registry-prometheus")
-
-    compileOnly("org.projectlombok:lombok")
-    annotationProcessor("org.projectlombok:lombok")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")

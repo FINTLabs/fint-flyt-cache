@@ -1,7 +1,15 @@
 [versions]
 spring-boot = "4.1.2"
+kotlin = "2.4.21"
+ktlint-gradle = "14.2.0"
+ktlint-cli = "1.8.0"
 ehcache = "3.12.0"
 
 [libraries]
 spring-boot-dependencies = { module = "org.springframework.boot:spring-boot-dependencies", version.ref = "spring-boot" }
 ehcache = { module = "org.ehcache:ehcache", version.ref = "ehcache" }
+
+[plugins]
+kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+kotlin-spring = { id = "org.jetbrains.kotlin.plugin.spring", version.ref = "kotlin" }
+ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlint-gradle" }
