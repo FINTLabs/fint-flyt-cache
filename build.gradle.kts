@@ -42,7 +42,12 @@ dependencies {
 
     implementation("com.github.ben-manes.caffeine:caffeine")
 
-    testImplementation("org.junit.jupiter:junit-jupiter")
+    compileOnly(platform(libs.spring.boot.dependencies))
+    compileOnly("org.springframework.boot:spring-boot-autoconfigure")
+    compileOnly("io.micrometer:micrometer-core")
+
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("org.springframework.boot:spring-boot-micrometer-metrics")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
