@@ -1,27 +1,35 @@
 # FINT Flyt Cache
 
-In-memory caches for FLYT services, backed by [Ehcache](https://www.ehcache.org/). Spring Boot 4 auto-configures a
-`FintCacheManager`.
+In-memory caches for FLYT services, backed by [Caffeine](https://github.com/ben-manes/caffeine).
 
 ```kotlin
-val cache: FintCache<String, ArkivressursResource> =
-    fintCacheManager.createCache("arkivressurs", String::class.java, ArkivressursResource::class.java)
+@Bean
+fun personResourceCache(): FintCache<String, PersonResource> = FintCache("person")
 
 cache.put(href, resource)
 cache.getOrNull(href) // or get(href), which throws NoSuchCacheEntryException
 ```
 
-| Property                                   | Default   | Used when `FintCacheOptions` leaves it unset |
-| ------------------------------------------ | --------- | -------------------------------------------- |
-| `novari.cache.defaultCacheEntryTimeToLive` | `6d`      | Time to live for each entry                  |
-| `novari.cache.defaultCacheHeapSize`        | `1000000` | Maximum number of entries per cache          |
+Entries expire 6 days after they were last written, and each cache holds at most 1 000 000 entries. Override with
+`FintCache("person", timeToLive = Duration.ofHours(1), maximumSize = 10_000)`.
+
+## Metrics
+
+With Micrometer on the classpath, every `FintCache` bean gets the standard Caffeine metrics (`cache.gets` with
+`result=hit|miss`, `cache.size`, `cache.evictions`, ...) tagged with `cache=<alias>`. Caches that are not beans get no
+metrics. Aliases must be unique, or the app fails at startup.
 
 ## Upgrading from 3.x to 4.0
 
-- Spring Boot 4 is required.
-- `getOptional(key)` is replaced by `getOrNull(key)`.
-- `FintCacheOptions.builder()` is replaced by `FintCacheOptions(timeToLive = ..., heapSize = ...)`.
-- `FintCacheInfo` is removed. It was not used.
+- Spring Boot 4 is required, and the value type must be non-null (`<V : Any>`).
+- `FintCacheManager` is removed. Create caches with `FintCache<K, V>(alias)` in `@Bean` methods instead of
+  `fintCacheManager.createCache(alias, K::class.java, V::class.java)`.
+- `novari.cache.*` properties and `FintCacheOptions` are removed. Pass `timeToLive` and `maximumSize` to the
+  constructor.
+- Renamed: `getOptional(key)` to `getOrNull(key)`, `getAll()` to `values()`, `getAllDistinct()` to `distinctValues()`,
+  and `getNumberOfEntries()` to `size`.
+- Removed: cache events and listeners, `getNumberOfDistinctValues()`, `NoSuchCacheException` and `FintCacheInfo`.
+  Remove the `no.novari.cache.ehcache.FintEhCacheEventLogger` log level from `application.yaml`.
 - `get(keys)` leaves out keys that are missing instead of returning `null` for them.
 
 ## Dependency Locking
