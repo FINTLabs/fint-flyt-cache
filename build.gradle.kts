@@ -38,12 +38,11 @@ dependencyLocking {
 
 dependencies {
     implementation(platform(libs.spring.boot.dependencies))
+    testImplementation(platform(libs.spring.boot.dependencies))
 
-    implementation("org.springframework.boot:spring-boot-starter-actuator")
-    implementation(libs.ehcache)
-    runtimeOnly("io.micrometer:micrometer-registry-prometheus")
+    implementation("com.github.ben-manes.caffeine:caffeine")
 
-    testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("org.junit.jupiter:junit-jupiter")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 

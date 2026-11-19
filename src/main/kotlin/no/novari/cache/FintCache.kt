@@ -1,45 +1,64 @@
 package no.novari.cache
 
+import com.github.benmanes.caffeine.cache.Cache
+import com.github.benmanes.caffeine.cache.Caffeine
 import no.novari.cache.exceptions.NoSuchCacheEntryException
+import java.time.Duration
 
-interface FintCache<K, V> {
-    val alias: String
+/**
+ * In-memory cache backed by Caffeine. Entries expire [timeToLive] after they were last written, and the least
+ * valuable entries are evicted when the cache holds more than [maximumSize].
+ */
+class FintCache<K : Any, V : Any>(
+    val alias: String,
+    timeToLive: Duration = Duration.ofDays(6),
+    maximumSize: Long = 1_000_000,
+) {
+    internal val nativeCache: Cache<K, V> =
+        Caffeine
+            .newBuilder()
+            .expireAfterWrite(timeToLive)
+            .maximumSize(maximumSize)
+            .recordStats()
+            .build()
 
-    fun containsKey(key: K): Boolean
+    /** The number of entries, after pending expiry and eviction has run. */
+    val size: Long
+        get() {
+            nativeCache.cleanUp()
+            return nativeCache.estimatedSize()
+        }
+
+    fun containsKey(key: K): Boolean = nativeCache.asMap().containsKey(key)
 
     fun get(key: K): V = getOrNull(key) ?: throw NoSuchCacheEntryException(key.toString())
 
-    fun getOrNull(key: K): V?
+    fun getOrNull(key: K): V? = nativeCache.getIfPresent(key)
 
-    fun get(keys: Collection<K>): List<V>
+    /** The values for the keys that are in the cache. Missing keys are left out. */
+    fun get(keys: Collection<K>): List<V> = nativeCache.getAllPresent(keys).values.toList()
 
-    fun getAll(): List<V>
+    fun values(): List<V> = nativeCache.asMap().values.toList()
 
-    fun getAllDistinct(): List<V> = getAll().distinct()
+    fun distinctValues(): List<V> = values().distinct()
 
     fun put(
         key: K,
         value: V,
-    )
+    ) = nativeCache.put(key, value)
 
     fun put(
         keys: Collection<K>,
         value: V,
     ) = put(keys.associateWith { value })
 
-    fun put(entries: Map<out K, V>)
+    fun put(entries: Map<out K, V>) = nativeCache.putAll(entries)
 
-    fun remove(key: K)
+    fun remove(key: K) = nativeCache.invalidate(key)
 
-    fun remove(keys: Collection<K>)
+    fun remove(keys: Collection<K>) = nativeCache.invalidateAll(keys)
 
-    fun clear()
+    fun clear() = nativeCache.invalidateAll()
 
-    fun getNumberOfEntries(): Long = getAll().size.toLong()
-
-    fun getNumberOfDistinctValues(): Long = getAllDistinct().size.toLong()
-
-    fun addEventListener(listener: FintCacheEventListener<K, V>)
-
-    fun removeEventListener(listener: FintCacheEventListener<K, V>)
+    override fun toString() = "FintCache{alias='$alias', entries=$size}"
 }
