@@ -1,76 +1,36 @@
-import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
-import org.gradle.kotlin.dsl.named
-import org.springframework.boot.gradle.plugin.SpringBootPlugin
-
-buildscript {
-    repositories {
-        gradlePluginPortal()
-    }
-    dependencies {
-        classpath(platform("com.fasterxml.jackson:jackson-bom:2.23.0"))
-        constraints {
-            classpath("org.apache.httpcomponents.client5:httpclient5:5.6.5")
-            classpath("org.apache.httpcomponents.core5:httpcore5:5.4.4")
-            classpath("org.apache.httpcomponents.core5:httpcore5-h2:5.4.4")
-            classpath("org.apache.commons:commons-lang3:3.22.0")
-        }
-    }
-}
-
 plugins {
-    id("org.springframework.boot") version "3.5.16" apply false
-    id("io.spring.dependency-management") version "1.1.7"
-    id("java-library")
-    id("maven-publish")
-    id("io.github.ben-manes.versions") version "0.67.0"
+    `java-library`
+    `maven-publish`
 }
 
 group = "no.novari"
-version = findProperty("version") as String? ?: "1.0-SNAPSHOT"
-
-java {
-    toolchain {
-        languageVersion.set(JavaLanguageVersion.of(25))
-    }
-    withSourcesJar()
-}
-
-publishing {
-    repositories {
-        mavenLocal()
-    }
-}
 
 repositories {
-    mavenLocal()
-    maven {
-        url = uri("https://repo.fintlabs.no/releases")
-    }
     mavenCentral()
 }
 
-dependencyManagement {
-    imports {
-        mavenBom(SpringBootPlugin.BOM_COORDINATES)
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
     }
+    withSourcesJar()
 }
-
-extra["jackson-bom.version"] = "2.21.7"
-extra["log4j2.version"] = "2.25.5"
 
 dependencyLocking {
     lockAllConfigurations()
 }
 
 dependencies {
+    implementation(platform(libs.spring.boot.dependencies))
+    compileOnly(platform(libs.spring.boot.dependencies))
+    annotationProcessor(platform(libs.spring.boot.dependencies))
+
     implementation("org.springframework.boot:spring-boot-starter-actuator")
+    implementation(libs.ehcache)
+    runtimeOnly("io.micrometer:micrometer-registry-prometheus")
 
     compileOnly("org.projectlombok:lombok")
-    runtimeOnly("io.micrometer:micrometer-registry-prometheus")
-    annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
     annotationProcessor("org.projectlombok:lombok")
-
-    implementation("org.ehcache:ehcache:3.12.0")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
@@ -96,19 +56,12 @@ publishing {
     publications {
         create<MavenPublication>("maven") {
             from(components["java"])
+            // Publish the versions resolved from the Spring Boot BOM, so consumers do not need the BOM.
+            versionMapping {
+                allVariants {
+                    fromResolutionResult()
+                }
+            }
         }
-    }
-}
-
-fun isNonStable(version: String): Boolean {
-    val stableKeyword = listOf("RELEASE", "FINAL", "GA").any { version.uppercase().contains(it) }
-    val regex = "^[0-9,.v-]+(-r)?$".toRegex()
-    val isStable = stableKeyword || regex.matches(version)
-    return !isStable
-}
-
-tasks.named<DependencyUpdatesTask>("dependencyUpdates") {
-    rejectVersionIf {
-        isNonStable(candidate.version)
     }
 }
