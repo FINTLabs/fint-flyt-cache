@@ -13,6 +13,8 @@ cache.getOrNull(href) // or get(href), which throws NoSuchCacheEntryException
 Entries expire 6 days after they were last written, and each cache holds at most 1 000 000 entries. Override with
 `FlytCache("person", timeToLive = Duration.ofHours(1), maximumSize = 10_000)`.
 
+The architecture is described in [docs/architecture.md](docs/architecture.md).
+
 ## Metrics
 
 With Micrometer on the classpath, every `FlytCache` bean gets the standard Caffeine metrics (`cache.gets` with
