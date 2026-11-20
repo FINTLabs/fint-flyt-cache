@@ -1,15 +1,15 @@
-package no.novari.cache
+package no.novari.flyt.cache
 
 import com.github.benmanes.caffeine.cache.Cache
 import com.github.benmanes.caffeine.cache.Caffeine
-import no.novari.cache.exceptions.NoSuchCacheEntryException
+import no.novari.flyt.cache.exceptions.NoSuchCacheEntryException
 import java.time.Duration
 
 /**
  * In-memory cache backed by Caffeine. Entries expire [timeToLive] after they were last written, and the least
  * valuable entries are evicted when the cache holds more than [maximumSize].
  */
-class FintCache<K : Any, V : Any>(
+class FlytCache<K : Any, V : Any>(
     val alias: String,
     timeToLive: Duration = Duration.ofDays(6),
     maximumSize: Long = 1_000_000,
@@ -60,5 +60,5 @@ class FintCache<K : Any, V : Any>(
 
     fun clear() = nativeCache.invalidateAll()
 
-    override fun toString() = "FintCache{alias='$alias', entries=$size}"
+    override fun toString() = "FlytCache{alias='$alias', entries=$size}"
 }

@@ -1,4 +1,4 @@
-package no.novari.cache
+package no.novari.flyt.cache
 
 import io.micrometer.core.instrument.MeterRegistry
 import io.micrometer.core.instrument.binder.MeterBinder
@@ -10,25 +10,25 @@ import org.springframework.boot.micrometer.metrics.autoconfigure.export.simple.S
 import org.springframework.boot.test.context.FilteredClassLoader
 import org.springframework.boot.test.context.runner.ApplicationContextRunner
 
-class FintCacheMetricsAutoConfigurationTest {
+class FlytCacheMetricsAutoConfigurationTest {
     private val contextRunner =
         ApplicationContextRunner()
             .withConfiguration(
                 AutoConfigurations.of(
                     MetricsAutoConfiguration::class.java,
                     SimpleMetricsExportAutoConfiguration::class.java,
-                    FintCacheMetricsAutoConfiguration::class.java,
+                    FlytCacheMetricsAutoConfiguration::class.java,
                 ),
             )
 
     @Test
     fun `registers metrics for every cache bean`() {
         contextRunner
-            .withBean("personCache", FintCache::class.java, { FintCache<String, Int>("person") })
-            .withBean("arkivressursCache", FintCache::class.java, { FintCache<String, Int>("arkivressurs") })
+            .withBean("personCache", FlytCache::class.java, { FlytCache<String, Int>("person") })
+            .withBean("arkivressursCache", FlytCache::class.java, { FlytCache<String, Int>("arkivressurs") })
             .run { context ->
                 @Suppress("UNCHECKED_CAST")
-                val personCache = context.getBean("personCache") as FintCache<String, Int>
+                val personCache = context.getBean("personCache") as FlytCache<String, Int>
                 personCache.put("key", 1)
                 personCache.getOrNull("key")
                 personCache.getOrNull("missingKey")
@@ -61,15 +61,15 @@ class FintCacheMetricsAutoConfigurationTest {
     @Test
     fun `fails at startup when two caches share an alias`() {
         contextRunner
-            .withBean("cache1", FintCache::class.java, { FintCache<String, Int>("person") })
-            .withBean("cache2", FintCache::class.java, { FintCache<String, Int>("person") })
+            .withBean("cache1", FlytCache::class.java, { FlytCache<String, Int>("person") })
+            .withBean("cache2", FlytCache::class.java, { FlytCache<String, Int>("person") })
             .run { assertThat(it).hasFailed().failure.hasMessageContaining("[person]") }
     }
 
     @Test
     fun `backs off without Micrometer`() {
         ApplicationContextRunner()
-            .withConfiguration(AutoConfigurations.of(FintCacheMetricsAutoConfiguration::class.java))
+            .withConfiguration(AutoConfigurations.of(FlytCacheMetricsAutoConfiguration::class.java))
             .withClassLoader(FilteredClassLoader(MeterBinder::class.java))
             .run { assertThat(it).doesNotHaveBean("fintCacheMeterBinder") }
     }

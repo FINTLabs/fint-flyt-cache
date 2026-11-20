@@ -1,4 +1,4 @@
-package no.novari.cache.exceptions
+package no.novari.flyt.cache.exceptions
 
 class NoSuchCacheEntryException(
     key: String,

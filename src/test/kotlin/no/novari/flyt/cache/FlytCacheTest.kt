@@ -1,6 +1,6 @@
-package no.novari.cache
+package no.novari.flyt.cache
 
-import no.novari.cache.exceptions.NoSuchCacheEntryException
+import no.novari.flyt.cache.exceptions.NoSuchCacheEntryException
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertNull
@@ -9,9 +9,9 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import java.time.Duration
 
-class FintCacheTest {
-    private fun createCacheWithEntries(): FintCache<String, Int> =
-        FintCache<String, Int>("testAlias").apply {
+class FlytCacheTest {
+    private fun createCacheWithEntries(): FlytCache<String, Int> =
+        FlytCache<String, Int>("testAlias").apply {
             put("testKey1", 1)
             put("testKey2", 1)
             put("testKey3", 5)
@@ -19,12 +19,12 @@ class FintCacheTest {
 
     @Test
     fun `has the alias it was created with`() {
-        assertEquals("testAlias", FintCache<String, Int>("testAlias").alias)
+        assertEquals("testAlias", FlytCache<String, Int>("testAlias").alias)
     }
 
     @Test
     fun `contains a key only after an entry with it is added`() {
-        val cache = FintCache<String, Int>("testAlias")
+        val cache = FlytCache<String, Int>("testAlias")
         assertFalse(cache.containsKey("testKey"))
 
         cache.put("testKey", 1)
@@ -69,7 +69,7 @@ class FintCacheTest {
 
     @Test
     fun `puts one value for several keys`() {
-        val cache = FintCache<String, Int>("testAlias")
+        val cache = FlytCache<String, Int>("testAlias")
         cache.put(listOf("testKey1", "testKey2"), 1)
 
         assertEquals(2, cache.size)
@@ -79,7 +79,7 @@ class FintCacheTest {
 
     @Test
     fun `puts values from a map`() {
-        val cache = FintCache<String, Int>("testAlias")
+        val cache = FlytCache<String, Int>("testAlias")
         cache.put(mapOf("testKey1" to 1, "testKey2" to 3))
 
         assertEquals(2, cache.size)
@@ -126,7 +126,7 @@ class FintCacheTest {
 
     @Test
     fun `expires an entry after its time to live`() {
-        val cache = FintCache<String, Int>("testAlias", timeToLive = Duration.ofMillis(1))
+        val cache = FlytCache<String, Int>("testAlias", timeToLive = Duration.ofMillis(1))
         cache.put("testKey", 1)
         Thread.sleep(5)
 
@@ -136,7 +136,7 @@ class FintCacheTest {
 
     @Test
     fun `evicts entries when the maximum size is exceeded`() {
-        val cache = FintCache<String, Int>("testAlias", maximumSize = 2)
+        val cache = FlytCache<String, Int>("testAlias", maximumSize = 2)
         cache.put("testKey1", 1)
         cache.put("testKey2", 2)
         cache.put("testKey3", 3)
@@ -146,6 +146,6 @@ class FintCacheTest {
 
     @Test
     fun `does not expose values in toString`() {
-        assertEquals("FintCache{alias='testAlias', entries=3}", createCacheWithEntries().toString())
+        assertEquals("FlytCache{alias='testAlias', entries=3}", createCacheWithEntries().toString())
     }
 }

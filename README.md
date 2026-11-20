@@ -1,28 +1,29 @@
-# FINT Flyt Cache
+# FLYT Cache
 
 In-memory caches for FLYT services, backed by [Caffeine](https://github.com/ben-manes/caffeine).
 
 ```kotlin
 @Bean
-fun personResourceCache(): FintCache<String, PersonResource> = FintCache("person")
+fun personResourceCache(): FlytCache<String, PersonResource> = FlytCache("person")
 
 cache.put(href, resource)
 cache.getOrNull(href) // or get(href), which throws NoSuchCacheEntryException
 ```
 
 Entries expire 6 days after they were last written, and each cache holds at most 1 000 000 entries. Override with
-`FintCache("person", timeToLive = Duration.ofHours(1), maximumSize = 10_000)`.
+`FlytCache("person", timeToLive = Duration.ofHours(1), maximumSize = 10_000)`.
 
 ## Metrics
 
-With Micrometer on the classpath, every `FintCache` bean gets the standard Caffeine metrics (`cache.gets` with
+With Micrometer on the classpath, every `FlytCache` bean gets the standard Caffeine metrics (`cache.gets` with
 `result=hit|miss`, `cache.size`, `cache.evictions`, ...) tagged with `cache=<alias>`. Caches that are not beans get no
 metrics. Aliases must be unique, or the app fails at startup.
 
 ## Upgrading from 3.x to 4.0
 
 - Spring Boot 4 is required, and the value type must be non-null (`<V : Any>`).
-- `FintCacheManager` is removed. Create caches with `FintCache<K, V>(alias)` in `@Bean` methods instead of
+- `FintCache` is renamed to `FlytCache`, and the package `no.novari.cache` to `no.novari.flyt.cache`.
+- `FintCacheManager` is removed. Create caches with `FlytCache<K, V>(alias)` in `@Bean` methods instead of
   `fintCacheManager.createCache(alias, K::class.java, V::class.java)`.
 - `novari.cache.*` properties and `FintCacheOptions` are removed. Pass `timeToLive` and `maximumSize` to the
   constructor.
