@@ -38,7 +38,8 @@ class FlytCache<K : Any, V : Any>(
     /** The values for the keys that are in the cache. Missing keys are left out. */
     fun get(keys: Collection<K>): List<V> = nativeCache.getAllPresent(keys).values.toList()
 
-    fun values(): List<V> = nativeCache.asMap().values.toList()
+    // Not toList(): it trusts the size, which still counts expired entries the iterator skips.
+    fun values(): List<V> = ArrayList(nativeCache.asMap().values)
 
     fun distinctValues(): List<V> = values().distinct()
 

@@ -135,6 +135,17 @@ class FlytCacheTest {
     }
 
     @Test
+    fun `reads values after the last entry has expired`() {
+        // Caffeine counts the expired entry until cleanup, while the iterator skips it.
+        val cache = FlytCache<String, Int>("testAlias", timeToLive = Duration.ofMillis(1))
+        cache.put("testKey", 1)
+        Thread.sleep(5)
+
+        assertEquals(emptyList<Int>(), cache.values())
+        assertEquals(emptyList<Int>(), cache.distinctValues())
+    }
+
+    @Test
     fun `evicts entries when the maximum size is exceeded`() {
         val cache = FlytCache<String, Int>("testAlias", maximumSize = 2)
         cache.put("testKey1", 1)
