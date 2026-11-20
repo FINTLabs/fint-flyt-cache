@@ -10,20 +10,27 @@ import org.springframework.boot.micrometer.metrics.autoconfigure.export.simple.S
 import org.springframework.boot.test.context.FilteredClassLoader
 import org.springframework.boot.test.context.runner.ApplicationContextRunner
 
-class FlytCacheMetricsAutoConfigurationTest {
-    private val contextRunner =
+class FlytCacheAutoConfigurationTest {
+    private val withMetrics =
         ApplicationContextRunner()
             .withConfiguration(
                 AutoConfigurations.of(
                     MetricsAutoConfiguration::class.java,
                     SimpleMetricsExportAutoConfiguration::class.java,
-                    FlytCacheMetricsAutoConfiguration::class.java,
+                    FlytCacheAutoConfiguration::class.java,
                 ),
             )
 
+    private val withoutMetricsSetup =
+        ApplicationContextRunner().withConfiguration(AutoConfigurations.of(FlytCacheAutoConfiguration::class.java))
+
+    private fun ApplicationContextRunner.withDuplicateAliases() =
+        withBean("cache1", FlytCache::class.java, { FlytCache<String, Int>("person") })
+            .withBean("cache2", FlytCache::class.java, { FlytCache<String, Int>("person") })
+
     @Test
     fun `registers metrics for every cache bean`() {
-        contextRunner
+        withMetrics
             .withBean("personCache", FlytCache::class.java, { FlytCache<String, Int>("person") })
             .withBean("arkivressursCache", FlytCache::class.java, { FlytCache<String, Int>("arkivressurs") })
             .run { context ->
@@ -60,17 +67,29 @@ class FlytCacheMetricsAutoConfigurationTest {
 
     @Test
     fun `fails at startup when two caches share an alias`() {
-        contextRunner
-            .withBean("cache1", FlytCache::class.java, { FlytCache<String, Int>("person") })
-            .withBean("cache2", FlytCache::class.java, { FlytCache<String, Int>("person") })
+        withMetrics.withDuplicateAliases().run { assertThat(it).hasFailed().failure.hasMessageContaining("[person]") }
+    }
+
+    @Test
+    fun `fails at startup on a shared alias without Micrometer`() {
+        withoutMetricsSetup
+            .withClassLoader(FilteredClassLoader(MeterBinder::class.java))
+            .withDuplicateAliases()
             .run { assertThat(it).hasFailed().failure.hasMessageContaining("[person]") }
     }
 
     @Test
-    fun `backs off without Micrometer`() {
-        ApplicationContextRunner()
-            .withConfiguration(AutoConfigurations.of(FlytCacheMetricsAutoConfiguration::class.java))
+    fun `fails at startup on a shared alias without Spring Boot's metrics setup`() {
+        withoutMetricsSetup.withDuplicateAliases().run { assertThat(it).hasFailed().failure.hasMessageContaining("[person]") }
+    }
+
+    @Test
+    fun `registers no metrics without Micrometer`() {
+        withoutMetricsSetup
             .withClassLoader(FilteredClassLoader(MeterBinder::class.java))
-            .run { assertThat(it).doesNotHaveBean("fintCacheMeterBinder") }
+            .run { context ->
+                assertThat(context).hasNotFailed()
+                assertThat(context).doesNotHaveBean("flytCacheMeterBinder")
+            }
     }
 }

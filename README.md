@@ -11,7 +11,8 @@ cache.getOrNull(href) // or get(href), which throws NoSuchCacheEntryException
 ```
 
 Entries expire 6 days after they were last written, and each cache holds at most 1 000 000 entries. Override with
-`FlytCache("person", timeToLive = Duration.ofHours(1), maximumSize = 10_000)`.
+`FlytCache("person", timeToLive = Duration.ofHours(1), maximumSize = 10_000)`. Aliases of `FlytCache` beans must be unique,
+or the app fails at startup.
 
 The architecture is described in [docs/architecture.md](docs/architecture.md).
 
@@ -19,7 +20,7 @@ The architecture is described in [docs/architecture.md](docs/architecture.md).
 
 With Micrometer on the classpath, every `FlytCache` bean gets the standard Caffeine metrics (`cache.gets` with
 `result=hit|miss`, `cache.size`, `cache.evictions`, ...) tagged with `cache=<alias>`. Caches that are not beans get no
-metrics. Aliases must be unique, or the app fails at startup.
+metrics.
 
 ## Upgrading from 3.x to 4.0
 

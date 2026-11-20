@@ -13,7 +13,7 @@ C4Component
     Component_Ext(app, "App code", "Kotlin", "@Bean caches, Kafka consumers")
     Component_Ext(registry, "MeterRegistry", "Micrometer", "Prometheus metrics")
     Component(cache, "FlytCache", "Kotlin", "get, put, values per alias")
-    Component(metrics, "Metrics auto-configuration", "Spring Boot", "MeterBinder for all caches")
+    Component(metrics, "Auto-configuration", "Spring Boot", "Alias check, metrics")
     Component_Ext(caffeine, "Caffeine", "In memory", "Expiry, eviction, stats")
 
     Rel(app, cache, "Reads, writes")
@@ -38,9 +38,9 @@ C4Component
 - **`FlytCache`** is a thin Kotlin API over one Caffeine cache. Entries expire a fixed time after they were last written
   (`expireAfterWrite`, 6 days by default), and Caffeine evicts the least valuable entries above `maximumSize`. Apps
   create caches in `@Bean` methods, so the metrics auto-configuration can find them.
-- **`FlytCacheMetricsAutoConfiguration`** registers a `MeterBinder` when Micrometer is on the classpath. Spring Boot binds
-  it to the `MeterRegistry` after all singletons are created, and it registers the standard Caffeine metrics for every
-  `FlytCache` bean, tagged with `cache=<alias>`. It fails at startup if two caches share an alias.
+- **`FlytCacheAutoConfiguration`** checks at startup that every `FlytCache` bean has a unique alias. With Micrometer on
+  the classpath it also registers a `MeterBinder`, which Spring Boot binds to the `MeterRegistry` after all singletons are
+  created. It registers the standard Caffeine metrics for every `FlytCache` bean, tagged with `cache=<alias>`.
 
 ## Use in FLYT
 
