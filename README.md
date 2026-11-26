@@ -14,6 +14,8 @@ Entries expire 6 days after they were last written, and each cache holds at most
 `FlytCache("person", timeToLive = Duration.ofHours(1), maximumSize = 10_000)`. Aliases of `FlytCache` beans must be unique,
 or the app fails at startup.
 
+Requires Spring Boot 4.2 or newer and Java 25 or newer (the published bytecode is Java 25).
+
 The architecture is described in [docs/architecture.md](docs/architecture.md).
 
 ## Metrics
@@ -24,7 +26,7 @@ metrics.
 
 ## Upgrading from 3.x to 4.0
 
-- Spring Boot 4 is required, and the value type must be non-null (`<V : Any>`).
+- Spring Boot 4.2 and Java 25 are required, and the value type must be non-null (`<V : Any>`).
 - `FintCache` is renamed to `FlytCache`, and the package `no.novari.cache` to `no.novari.flyt.cache`.
 - `FintCacheManager` is removed. Create caches with `FlytCache<K, V>(alias)` in `@Bean` methods instead of
   `fintCacheManager.createCache(alias, K::class.java, V::class.java)`.
