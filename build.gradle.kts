@@ -1,78 +1,71 @@
-import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
-import org.gradle.kotlin.dsl.named
-import org.springframework.boot.gradle.plugin.SpringBootPlugin
-
-buildscript {
-    repositories {
-        gradlePluginPortal()
-    }
-    dependencies {
-        classpath(platform("com.fasterxml.jackson:jackson-bom:2.23.0"))
-        constraints {
-            classpath("org.apache.httpcomponents.client5:httpclient5:5.6.5")
-            classpath("org.apache.httpcomponents.core5:httpcore5:5.5")
-            classpath("org.apache.httpcomponents.core5:httpcore5-h2:5.5")
-            classpath("org.apache.commons:commons-lang3:3.22.0")
-        }
-    }
-}
+import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
 
 plugins {
-    id("org.springframework.boot") version "3.5.16" apply false
-    id("io.spring.dependency-management") version "1.1.7"
-    id("java-library")
-    id("maven-publish")
-    id("io.github.ben-manes.versions") version "0.67.0"
+    `java-library`
+    `maven-publish`
+    alias(libs.plugins.kotlin.jvm)
+    alias(libs.plugins.kotlin.spring)
+    alias(libs.plugins.ktlint)
 }
 
 group = "no.novari"
-version = findProperty("version") as String? ?: "1.0-SNAPSHOT"
+
+repositories {
+    mavenCentral()
+}
 
 java {
     toolchain {
-        languageVersion.set(JavaLanguageVersion.of(25))
+        languageVersion = JavaLanguageVersion.of(25)
     }
     withSourcesJar()
 }
 
-publishing {
-    repositories {
-        mavenLocal()
+kotlin {
+    compilerOptions {
+        // Spring Boot 4.2 manages Kotlin 2.4, so apps may run with a 2.4 stdlib.
+        apiVersion = KotlinVersion.KOTLIN_2_4
     }
+    // The stdlib version Spring Boot manages, not the Kotlin plugin's, so the library does not upgrade it in apps.
+    coreLibrariesVersion =
+        libs.versions.kotlin.stdlib
+            .get()
 }
 
-repositories {
-    mavenLocal()
-    maven {
-        url = uri("https://repo.fintlabs.no/releases")
-    }
-    mavenCentral()
+ktlint {
+    version = libs.versions.ktlint.cli
 }
-
-dependencyManagement {
-    imports {
-        mavenBom(SpringBootPlugin.BOM_COORDINATES)
-    }
-}
-
-extra["jackson-bom.version"] = "2.21.7"
-extra["log4j2.version"] = "2.25.5"
 
 dependencyLocking {
     lockAllConfigurations()
 }
 
+// The Spring Boot BOM sets versions in this build only. It is not published, so it cannot change the app's Spring Boot
+// or Kotlin version. versionMapping below publishes the resolved versions instead.
+val springBootBom = configurations.dependencyScope("springBootBom")
+listOf("compileClasspath", "runtimeClasspath", "testCompileClasspath", "testRuntimeClasspath").forEach {
+    configurations.named(it) { extendsFrom(springBootBom.get()) }
+}
+
 dependencies {
-    implementation("org.springframework.boot:spring-boot-starter-actuator")
+    springBootBom(platform(libs.spring.boot.dependencies))
 
-    compileOnly("org.projectlombok:lombok")
-    runtimeOnly("io.micrometer:micrometer-registry-prometheus")
-    annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
-    annotationProcessor("org.projectlombok:lombok")
+    constraints {
+        ktlint(libs.logback.core) {
+            because(
+                "ktlint 1.8.0 brings logback-core 1.3.16, which has CVE-2026-1225, CVE-2026-9828 and " +
+                    "CVE-2026-10532. Only the ktlint tool classpath, not the published library",
+            )
+        }
+    }
 
-    implementation("org.ehcache:ehcache:3.12.0")
+    implementation("com.github.ben-manes.caffeine:caffeine")
+
+    compileOnly("org.springframework.boot:spring-boot-autoconfigure")
+    compileOnly("io.micrometer:micrometer-core")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("org.springframework.boot:spring-boot-micrometer-metrics")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
@@ -96,19 +89,12 @@ publishing {
     publications {
         create<MavenPublication>("maven") {
             from(components["java"])
+            // Publish the versions resolved from the Spring Boot BOM, so consumers do not need the BOM.
+            versionMapping {
+                allVariants {
+                    fromResolutionResult()
+                }
+            }
         }
-    }
-}
-
-fun isNonStable(version: String): Boolean {
-    val stableKeyword = listOf("RELEASE", "FINAL", "GA").any { version.uppercase().contains(it) }
-    val regex = "^[0-9,.v-]+(-r)?$".toRegex()
-    val isStable = stableKeyword || regex.matches(version)
-    return !isStable
-}
-
-tasks.named<DependencyUpdatesTask>("dependencyUpdates") {
-    rejectVersionIf {
-        isNonStable(candidate.version)
     }
 }
