@@ -4,6 +4,7 @@ import io.micrometer.core.instrument.MeterRegistry
 import io.micrometer.core.instrument.binder.MeterBinder
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
+import org.springframework.beans.factory.getBean
 import org.springframework.boot.autoconfigure.AutoConfigurations
 import org.springframework.boot.micrometer.metrics.autoconfigure.MetricsAutoConfiguration
 import org.springframework.boot.micrometer.metrics.autoconfigure.export.simple.SimpleMetricsExportAutoConfiguration
@@ -39,7 +40,7 @@ class FlytCacheAutoConfigurationTest {
                 personCache.put("key", 1)
                 personCache.getOrNull("key")
                 personCache.getOrNull("missingKey")
-                val registry = context.getBean(MeterRegistry::class.java)
+                val registry = context.getBean<MeterRegistry>()
 
                 assertThat(
                     registry
